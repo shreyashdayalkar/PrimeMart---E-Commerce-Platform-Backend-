@@ -1,18 +1,20 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 
-dotenv.config();
+let isConnected = false; // global cache for serverless
 
 const connectDB = async () => {
+  if (isConnected) {
+    return;
+  }
+
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    isConnected = true;
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    process.exit(1);
+    console.error("❌ MongoDB Connection Error:", error.message);
+    // ❌ DO NOT exit process on Vercel
+    throw error;
   }
 };
 
