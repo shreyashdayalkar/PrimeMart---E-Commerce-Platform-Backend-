@@ -20,19 +20,22 @@ const app = express();
 /* ✅ CONNECT DATABASE */
 connectDB();
 
-/* ✅ MIDDLEWARE */
+/* ✅ CORS (FRONTEND + LOCALHOST ALLOWED) */
 app.use(
   cors({
-    origin: true,
+    origin: [
+      "http://localhost:5173",
+      "https://prime-mart-e-commerce-platform.vercel.app" // 👈 FRONTEND URL
+    ],
     credentials: true,
   })
 );
 
+/* ✅ BODY PARSERS */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ✅ ROUTES */
-// notificationRoutes must come before /api/admin
 app.use("/api/admin/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
 
@@ -53,5 +56,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Server error" });
 });
 
-/* ✅ IMPORTANT FOR VERCEL */
+/* ✅ REQUIRED FOR VERCEL */
 export default app;
